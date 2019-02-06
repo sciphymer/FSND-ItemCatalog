@@ -1,11 +1,40 @@
-from flask import Flask
+from flask import Flask, render_template
 
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import create_engine
+from dbModels import Base, Category, Item, User
+
+user_engine = create_engine('sqlite:///users.db')
+app_engine = create_engine('sqlite:///sportCategories.db')
 app = Flask(__name__)
+
+Base.metadata.bind = app_engine
+Base.metadata.bind = user_engine
+app_DBSession = sessionmaker(bind=app_engine)
+user_DBSession = sessionmaker(bind=user_engine)
+app_session = app_DBSession()
+user_session = user_DBSession()
 
 
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+def showCategories():
+    categories = app_session.query(Category).all
+    return render_template('categories.html', categories=categories)
+
+
+@app.route('/catalog/<string:category>/items')
+def showItems(category):
+    cat = app_session.query(Category).filter_by(name=category).one()
+    categories = app_session.query(Item).filter_by(cat_id=cat.id).all
+    return render_template('item.html', categories=categories)
+
+
+@app.route('/catalog/<string:category>/<string:item>')
+def showDescription(category, item):
+    cat = app_session.query(Category).filter_by(name=category).one()
+    item = app_session.query(Item).filter_by(title=item).filter_by(cat_id=cat.id).one()
+    return render_template('description.html', title=item.title, description=item.description)
 
 
 if __name__ == '__main__':
