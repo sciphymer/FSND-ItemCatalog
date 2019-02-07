@@ -14,7 +14,7 @@ class User(Base):
 	password_hash = Column(String(64))
 
 	# User Info while login with OAuth
-	name = Column(String(250), nullable=False)
+	name = Column(String(250), nullable=True)
 	email = Column(String(250), nullable=True)
 	picture = Column(String(250), nullable=True)
 
