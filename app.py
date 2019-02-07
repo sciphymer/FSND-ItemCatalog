@@ -22,6 +22,9 @@ def showCategories():
 	categories = app_session.query(Category).all
 	return render_template('categories.html', categories=categories)
 
+@app.route('/newItem')
+def newItem():
+	return render_template('newItem.html')
 
 @app.route('/catalog/<string:category>/items')
 def showItems(category):
