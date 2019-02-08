@@ -23,7 +23,7 @@ categories = (["Soccer", "BasketBall",
 			  "Snowboarding", "Rock Climbing",
 			   "Foosball", "Skating", "Hockey"])
 for category in categories:
-	cat = Category(name=category, user_id=1)
+	cat = Category(name=category)
 	app_session.add(cat)
 app_session.commit()
 

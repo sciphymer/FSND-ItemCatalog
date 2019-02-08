@@ -16,20 +16,36 @@ user_DBSession = sessionmaker(bind=user_engine)
 app_session = app_DBSession()
 user_session = user_DBSession()
 
+categories = app_session.query(Category).all()
+
 
 @app.route('/')
 def showCategories():
-	categories = app_session.query(Category).all
 	return render_template('categories.html', categories=categories)
 
-@app.route('/newItem')
+
+@app.route('/newItem', methods=['GET', 'POST'])
 def newItem():
-	return render_template('newItem.html')
+	if request.method == 'GET':
+		return render_template('newItem.html', categories=categories)
+	if request.method == 'POST':
+		if request.form['title'] and request.form['description'] and request.form['cat_id']:
+			title = request.form['title']
+			description = request.form['description']
+			cat_id = request.form['cat_id']
+			item = Item(title=title, description=description, cat_id=cat_id)
+			print "checkpt 1"
+			app_session.add(item)
+			print "checkpt 2"
+			app_session.commit()
+			print "checkpt 3"
+			return redirect(url_for('showCategories'))
+
+
 
 @app.route('/catalog/<string:category>/items')
 def showItems(category):
-	cat = app_session.query(Category).filter_by(name=category).one()
-	categories = app_session.query(Item).filter_by(cat_id=cat.id).all
+	items = app_session.query(Item).all()
 	return render_template('item.html', categories=categories)
 
 
@@ -44,7 +60,7 @@ def showDescription(category, item):
 def editItem(category, item):
 	edit_item = app_session.query(Item).filter(Item.category.has(name=category)).filter_by(title=item).one()
 	if request.method == 'GET':
-		return render_template('editItem.html',item=edit_item)
+		return render_template('editItem.html', item=edit_item)
 	if request.method == 'POST':
 		if request.form['title'] and request.form['description'] and request.form['category']:
 			edit_item.title = request.form['title']
@@ -57,7 +73,7 @@ def editItem(category, item):
 			return redirect(url_for('showCategories'))
 		else:
 			flash('The form is incomplete!')
-			return render_template('editItem.html',item=edit_item)
+			return render_template('editItem.html', item=edit_item)
 
 
 @app.route('/catalog/<string:category>/<string:item>/delete', methods=['GET', 'POST'])
@@ -68,8 +84,9 @@ def deleteItem(category, item):
 	if request.method == 'POST':
 		app_session.delete(delete_item)
 		app_session.commit()
-		return redirect(url_for('showItems(category)', category = category))
+		return redirect(url_for('showItems(category)', category=category))
 
 
 if __name__ == '__main__':
-	app.run()
+	app.debug = True
+	app.run(host='0.0.0.0', port=5050)
