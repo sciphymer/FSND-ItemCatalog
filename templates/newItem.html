@@ -5,6 +5,20 @@
     <title>Title</title>
 </head>
 <body>
-<h1>new Item page</h1>
+<h1>Create new Item</h1>
+<form action="/newItem" method="post">
+    <label for="title">Title:</label>
+    <input type ="text" maxlength="20" name="title" placeholder="Item Title">
+    <label for="description">Description:</label>
+    <input type ="text" maxlength="200" name="description" placeholder="Item Description">
+    <label for="cat_id">Category belongs:</label>
+    <select name="cat_id">
+        <option disabled="disabled">choose Category</option>
+        {% for i in categories %}
+            <option value="{{ i.id }}">{{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" value="submit">Create</button>
+</form>
 </body>
 </html>

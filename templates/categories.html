@@ -5,6 +5,11 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>Categories page</h1>
+    <h1>Categories:</h1>
+    {% for i in categories %}
+        {{ i.id }}<a href="/catalog/{{ i.name }}/items">{{ i.name }}</a>
+        <br>
+    {% endfor %}
+    <a href="/newItem">Create new Item</a>
 </body>
 </html>
