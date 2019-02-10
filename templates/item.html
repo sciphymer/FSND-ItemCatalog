@@ -5,6 +5,18 @@
     <title>Title</title>
 </head>
 <body>
-<h1>Item page</h1>
+<h1>
+    {{ category }} Items ({{itemQty}}
+    {% if itemQty > 1 %}
+        items
+    {% else %}
+        item
+    {% endif %})
+</h1>
+{% for i in items %}
+    <a class="itemLink" href="/catalog/{{ category }}/{{i.title}}">{{ i.title }}</a>
+    <br>
+{% endfor %}
+
 </body>
 </html>

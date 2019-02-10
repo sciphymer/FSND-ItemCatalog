@@ -5,8 +5,8 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from dbModels import Base, Category, Item, User
 
-user_engine = create_engine('sqlite:///users.db')
-app_engine = create_engine('sqlite:///sportCategories.db')
+user_engine = create_engine('sqlite:///users.db', connect_args={'check_same_thread': False})
+app_engine = create_engine('sqlite:///sportCategories.db', connect_args={'check_same_thread': False})
 app = Flask(__name__)
 
 Base.metadata.bind = app_engine
@@ -46,7 +46,8 @@ def newItem():
 @app.route('/catalog/<string:category>/items')
 def showItems(category):
 	items = app_session.query(Item).all()
-	return render_template('item.html', categories=categories)
+	itemQty = len(items)
+	return render_template('item.html', items=items, category=category, itemQty=itemQty)
 
 
 @app.route('/catalog/<string:category>/<string:item>')
