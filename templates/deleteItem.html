@@ -5,6 +5,10 @@
     <title>Title</title>
 </head>
 <body>
-<h1>delete item page</h1>
+<h1>Delete Item</h1>
+<p>Are you sure want to delete {{ item.title }} ?</p>
+<form action="/catalog/{{ category }}/{{ item.title }}/delete" method="post">
+  <button type="submit">Delete</button>
+</form>
 </body>
 </html>

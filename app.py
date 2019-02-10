@@ -30,31 +30,28 @@ def newItem():
 		return render_template('newItem.html', categories=categories)
 	if request.method == 'POST':
 		if request.form['title'] and request.form['description'] and request.form['cat_id']:
-			title = request.form['title']
-			description = request.form['description']
-			cat_id = request.form['cat_id']
-			item = Item(title=title, description=description, cat_id=cat_id)
-			print "checkpt 1"
+			item = Item(
+				title=request.form['title'],
+				description=request.form['description'],
+				cat_id=request.form['cat_id'])
 			app_session.add(item)
-			print "checkpt 2"
 			app_session.commit()
-			print "checkpt 3"
 			return redirect(url_for('showCategories'))
-
 
 
 @app.route('/catalog/<string:category>/items')
 def showItems(category):
-	items = app_session.query(Item).all()
+	items = app_session.query(Item).filter(Item.category.has(name=category)).all()
 	itemQty = len(items)
 	return render_template('item.html', items=items, category=category, itemQty=itemQty)
 
 
 @app.route('/catalog/<string:category>/<string:item>')
 def showDescription(category, item):
-	cat = app_session.query(Category).filter_by(name=category).one()
-	item = app_session.query(Item).filter_by(title=item).filter_by(cat_id=cat.id).one()
-	return render_template('description.html', title=item.title, description=item.description)
+	item = app_session.query(Item)\
+		.filter(Item.category.has(name=category))\
+		.filter_by(title=item).one()
+	return render_template('description.html', category=category, item=item)
 
 
 @app.route('/catalog/<string:category>/<string:item>/edit', methods=['GET', 'POST'])
@@ -79,13 +76,19 @@ def editItem(category, item):
 
 @app.route('/catalog/<string:category>/<string:item>/delete', methods=['GET', 'POST'])
 def deleteItem(category, item):
-	delete_item = app_session.query(Item).filter(Item.category.has(name=category)).filter_by(title=item).one()
-	if request.method == 'GET':
-		return render_template('deleteItem.html, item=delete_item')
-	if request.method == 'POST':
-		app_session.delete(delete_item)
-		app_session.commit()
-		return redirect(url_for('showItems(category)', category=category))
+	delete_item = app_session.query(Item)\
+		.filter(Item.category.has(name=category))\
+		.filter_by(title=item).one_or_none()
+	if delete_item is not None:
+		if request.method == 'GET':
+			return render_template('deleteItem.html', item=delete_item, category=category)
+		if request.method == 'POST':
+			app_session.delete(delete_item)
+			app_session.commit()
+			return redirect(url_for('showItems', category=category))
+	else:
+		flash('Item does not exist in db')
+		return redirect(url_for('showItems', category=category))
 
 
 if __name__ == '__main__':
