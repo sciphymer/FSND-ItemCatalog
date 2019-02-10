@@ -1,6 +1,4 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
-
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from dbModels import Base, Category, Item, User
@@ -58,16 +56,15 @@ def showDescription(category, item):
 def editItem(category, item):
 	edit_item = app_session.query(Item).filter(Item.category.has(name=category)).filter_by(title=item).one()
 	if request.method == 'GET':
-		return render_template('editItem.html', item=edit_item)
+		return render_template('editItem.html', item=edit_item, categories=categories, category=category)
 	if request.method == 'POST':
-		if request.form['title'] and request.form['description'] and request.form['category']:
+		if request.form['title'] and request.form['description'] and request.form['cat_id']:
 			edit_item.title = request.form['title']
 			edit_item.description = request.form['description']
-			db_cat = app_session.query(Category).filter_by(name=category).one()
-			edit_item.cat_id = db_cat.id
+			edit_item.cat_id = request.form['cat_id']
 			app_session.add(edit_item)
-			flash('Category ID: %s, %s Successfully updated' % (edit_item.cat_id, edit_item.title))
 			app_session.commit()
+			#flash('Category ID: %s, %s Successfully updated' % (edit_item.cat_id, edit_item.title))
 			return redirect(url_for('showCategories'))
 		else:
 			flash('The form is incomplete!')
@@ -87,7 +84,7 @@ def deleteItem(category, item):
 			app_session.commit()
 			return redirect(url_for('showItems', category=category))
 	else:
-		flash('Item does not exist in db')
+		#flash('Item does not exist in db')
 		return redirect(url_for('showItems', category=category))
 
 
