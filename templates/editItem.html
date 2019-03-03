@@ -5,6 +5,36 @@
     <title>Title</title>
 </head>
 <body>
-<h1>edit item page</h1>
+<h1>Edit Item </h1>
+<form action="/catalog/{{category}}/{{ item.title }}/edit" method="post">
+
+    <div>
+        <label for="title">Title:</label>
+        <input type ="text" maxlength="20" name="title"
+               value="{{ item.title }}" placeholder="Title">
+    </div>
+    <br>
+    <div>
+        <label for="description">Description:</label>
+        <input type ="text" maxlength="200" name="description"
+               value="{{ item.description }}" placholder="Description">
+    </div>
+    <br>
+    <div>
+        <label for="cat_id">Category belongs:</label>
+        <select name="cat_id" >
+            <option value="" disabled selected >choose Category</option>
+            {% for i in categories %}
+                {% if item.cat_id == i.id %}
+                    <option value="{{ i.id }}" selected>{{ i.name }}</option>
+                {% else %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <br>
+    <button type="submit" value="submit">Update</button>
+</form>
 </body>
 </html>

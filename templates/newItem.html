@@ -13,7 +13,7 @@
     <input type ="text" maxlength="200" name="description" placeholder="Item Description">
     <label for="cat_id">Category belongs:</label>
     <select name="cat_id">
-        <option disabled="disabled">choose Category</option>
+        <option value="" selected disabled>choose category</option>
         {% for i in categories %}
             <option value="{{ i.id }}">{{ i.name }}</option>
         {% endfor %}
