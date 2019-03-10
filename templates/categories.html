@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1>Categories:</h1>
-    {% for i in categories %}
-        {{ i.id }}<a href="/catalog/{{ i.name }}/items">{{ i.name }}</a>
-        <br>
-    {% endfor %}
-    <a href="/newItem">Create new Item</a>
-</body>
-</html>
+<h1>Categories:</h1>
+{% if categories != null %}
+	{% for i in categories %}
+	    {{ i.id }}<a href="/catalog/{{ i.name }}/items">{{ i.name }}</a>
+	    <br>
+	{% endfor %}
+{% else %}
+	<span>Database error!</span>
+{% endif %}
+<a href="/newItem">Create new Item</a>

@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>Delete Item</h1>
-<p>Are you sure want to delete {{ item.title }} ?</p>
-<form action="/catalog/{{ category }}/{{ item.title }}/delete" method="post">
-  <button type="submit">Delete</button>
-</form>
-</body>
-</html>
+{% extends "main.html" %}
+{% block content %}
+	<h1>Delete Item</h1>
+	<p>Are you sure want to delete {{ item.title }} ?</p>
+	<form action="/catalog/{{ category }}/{{ item.title }}/delete" method="post">
+	  <button type="submit">Delete</button>
+	</form>
+{% endblock %}

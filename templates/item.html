@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "main.html" %}
+{% block menu %}
+	{% include "categories.html" %}
+{% endblock %}
+{% block content %}
 <h1>
     {{ category }} Items ({{itemQty}}
     {% if itemQty > 1 %}
@@ -17,6 +15,4 @@
     <a class="itemLink" href="/catalog/{{ category }}/{{i.title}}">{{ i.title }}</a>
     <br>
 {% endfor %}
-
-</body>
-</html>
+{% endblock %}

@@ -16,11 +16,17 @@ user_session = user_DBSession()
 
 categories = app_session.query(Category).all()
 
+@app.route('/login')
+def showLogin():
+	return render_template();
+
+@app.route('/logout')
+def disconnect():
+	return render_template();
 
 @app.route('/')
 def showCategories():
-	return render_template('categories.html', categories=categories)
-
+	return render_template('index.html', categories=categories)
 
 @app.route('/newItem', methods=['GET', 'POST'])
 def newItem():
@@ -41,15 +47,19 @@ def newItem():
 def showItems(category):
 	items = app_session.query(Item).filter(Item.category.has(name=category)).all()
 	itemQty = len(items)
-	return render_template('item.html', items=items, category=category, itemQty=itemQty)
+	return render_template('item.html', items=items, categories=categories, category=category, itemQty=itemQty)
 
 
 @app.route('/catalog/<string:category>/<string:item>')
 def showDescription(category, item):
+	print category
+	print item
 	item = app_session.query(Item)\
 		.filter(Item.category.has(name=category))\
 		.filter_by(title=item).one()
-	return render_template('description.html', category=category, item=item)
+	print item.title
+	print item.description
+	return render_template('description.html', categories=categories, category=category, item=item)
 
 
 @app.route('/catalog/<string:category>/<string:item>/edit', methods=['GET', 'POST'])

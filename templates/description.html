@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "main.html" %}
+{% block menu %}
+	{% include "categories.html" %}
+{% endblock %}
+{% block content %}
 <h1>{{ item.title }}</h1>
 <p>{{ item.description }}</p>
 <div>
-    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a> |
+    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a>
     <a href="/catalog/{{ category }}/{{ item.title }}/delete" methods="POST"> Delete</a>
-
 </div>
-</body>
-</html>
+{% endblock %}
