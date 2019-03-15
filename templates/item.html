@@ -1,18 +1,24 @@
 {% extends "main.html" %}
 {% block menu %}
+<nav class="col-md-4">
 	{% include "categories.html" %}
+</nav>
 {% endblock %}
 {% block content %}
-<h1>
-    {{ category }} Items ({{itemQty}}
-    {% if itemQty > 1 %}
-        items
-    {% else %}
-        item
-    {% endif %})
-</h1>
-{% for i in items %}
-    <a class="itemLink" href="/catalog/{{ category }}/{{i.title}}">{{ i.title }}</a>
-    <br>
-{% endfor %}
+<div class="col">
+	<div class="card">
+		<h3>
+		    {{ category }} Items ({{itemQty}}
+		    {% if itemQty > 1 %}
+		        items
+		    {% else %}
+		        item
+		    {% endif %})
+		</h3>
+		{% for i in items %}
+		    <a class="itemLink" href="/catalog/{{ category }}/{{i.title}}">{{ i.title }}</a>
+		    <br>
+		{% endfor %}
+	</div>
+</div>
 {% endblock %}

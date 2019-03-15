@@ -1,0 +1,23 @@
+nav{
+	background-color: white;
+}
+
+.navbar-light {
+	margin: auto;
+	background-color: orange;
+}
+.btn-primary,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+	background-color: #A56DF8;
+	border-color: #A56DF8;
+}
+
+.btn-primary:hover{
+	background-color: #C731F5;
+}
+
+.container{
+	width:  100%;
+}

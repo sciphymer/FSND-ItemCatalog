@@ -1,12 +1,20 @@
 {% extends "main.html" %}
+
 {% block menu %}
+<nav class="col-md-4">
 	{% include "categories.html" %}
+</nav>
 {% endblock %}
+
+
 {% block content %}
-<h1>{{ item.title }}</h1>
-<p>{{ item.description }}</p>
-<div>
-    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a>
-    <a href="/catalog/{{ category }}/{{ item.title }}/delete" methods="POST"> Delete</a>
+<div class="col">
+	<h3>{{ item.title }}</h3>
+	<p>{{ item.description }}</p>
+	<div>
+	    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a>
+	    <a href="/catalog/{{ category }}/{{ item.title }}/delete" methods="POST"> Delete</a>
+	</div>
 </div>
 {% endblock %}
+
