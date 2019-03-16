@@ -289,13 +289,9 @@ def showItems(category):
 
 @app.route('/catalog/<string:category>/<string:item>')
 def showDescription(category, item):
-	print category
-	print item
 	item = app_session.query(Item)\
 		.filter(Item.category.has(name=category))\
 		.filter_by(title=item).one()
-	print item.title
-	print item.description
 	return render_template('description.html', categories=categories, category=category, item=item)
 
 

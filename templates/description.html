@@ -11,7 +11,7 @@
 <div class="col">
 	<h3>{{ item.title }}</h3>
 	<p>{{ item.description }}</p>
-	{%if 'username' not in session %}
+	{%if 'username' in session %}
 		{% if item.user_id == session['user_id'] %}
 		<div>
 		    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a>
