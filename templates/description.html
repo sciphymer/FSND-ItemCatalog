@@ -11,10 +11,14 @@
 <div class="col">
 	<h3>{{ item.title }}</h3>
 	<p>{{ item.description }}</p>
-	<div>
-	    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a>
-	    <a href="/catalog/{{ category }}/{{ item.title }}/delete" methods="POST"> Delete</a>
-	</div>
+	{%if 'username' not in session %}
+		{% if item.user_id == session['user_id'] %}
+		<div>
+		    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a>
+		    <a href="/catalog/{{ category }}/{{ item.title }}/delete" methods="POST"> Delete</a>
+		</div>
+		{% endif %}
+	{% endif %}
 </div>
 {% endblock %}
 

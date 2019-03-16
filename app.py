@@ -29,7 +29,6 @@ CLIENT_ID = json.loads(
 @app.route('/login')
 def showLogin():
 	state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
-	print "state %s" % state
 	login_session['state'] = state
 	return render_template('login3.html', STATE=state, redirectPath="/")
 
@@ -139,19 +138,22 @@ def fbdisconnect():
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
 	# Validate state token
-	print "hit the route /gconnect"
+	print "Validate state token"
 	if request.args.get('state') != login_session['state']:
 		response = make_response(json.dumps('Invalid state parameter.'), 401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
 	# Obtain authorization code
 	code = request.data
-
+	print "Obtain authorization code"
 	try:
 		# Upgrade the authorization code into a credentials object
+		print "Upgrade the authorization code into a credentials object"
 		oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+		print "oauth_flow=%s"%oauth_flow
 		oauth_flow.redirect_uri = 'postmessage'
 		credentials = oauth_flow.step2_exchange(code)
+		print "credentials=%s"%credentials
 	except FlowExchangeError:
 		response = make_response(
 			json.dumps('Failed to upgrade the authorization code.'), 401)
@@ -159,7 +161,9 @@ def gconnect():
 		return response
 
 	# Check that the access token is valid.
+	print "Check that the access token is valid."
 	access_token = credentials.access_token
+	print "access_token=%s"%access_token
 	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
 		   % access_token)
 	h = httplib2.Http()
@@ -252,20 +256,27 @@ def gdisconnect():
 @app.route('/')
 @app.route('/catalog')
 def showCategories():
-	return render_template('index.html', categories=categories)
+	user_items = []
+	if 'username' in login_session:
+		user_items = app_session.query(Item).filter_by(user_id=login_session['user_id']).all()
+	return render_template('index.html', categories=categories, items = user_items)
 
 @app.route('/newItem', methods=['GET', 'POST'])
 def newItem():
 	if request.method == 'GET':
+		if 'username' not in login_session:
+			return redirect('/login')
 		return render_template('newItem.html', categories=categories)
 	if request.method == 'POST':
 		if request.form['title'] and request.form['description'] and request.form['cat_id']:
 			item = Item(
 				title=request.form['title'],
 				description=request.form['description'],
-				cat_id=request.form['cat_id'])
+				cat_id=request.form['cat_id'],
+				user_id=login_session['user_id'])
 			app_session.add(item)
 			app_session.commit()
+			flash('New Item %s is successfully Created.' % item.title)
 			return redirect(url_for('showCategories'))
 
 
