@@ -3,20 +3,18 @@
 <h3>Edit Item </h3>
 <form action="/catalog/{{category}}/{{ item.title }}/edit" method="post">
 
-    <div>
-        <label for="title">Title:</label>
+    <div class="form-group">
+        <label for="title">Title:</label><br>
         <input type ="text" maxlength="20" name="title"
                value="{{ item.title }}" placeholder="Title">
     </div>
-    <br>
-    <div>
-        <label for="description">Description:</label>
+    <div class="form-group">
+        <label for="description">Description:</label><br>
         <input type ="text" maxlength="200" name="description"
                value="{{ item.description }}" placholder="Description">
     </div>
-    <br>
-    <div>
-        <label for="cat_id">Category belongs:</label>
+    <div class="form-group">
+        <label for="cat_id">Category belongs:</label><br>
         <select name="cat_id" >
             <option value="" disabled selected >choose Category</option>
             {% for i in categories %}
@@ -28,7 +26,6 @@
             {% endfor %}
         </select>
     </div>
-    <br>
-    <button type="submit" value="submit">Update</button>
+    <button class="btn btn-primary" type="submit" value="submit">Update</button>
 </form>
 {% endblock %}

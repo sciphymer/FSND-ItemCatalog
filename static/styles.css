@@ -2,6 +2,15 @@ nav{
 	background-color: white;
 }
 
+#newItemForm{
+	margin: 20px auto;
+}
+
+#loginPage{
+	margin: 200px auto;
+	width: 350px;
+}
+
 .navbar-light {
 	margin: auto;
 	background-color: orange;

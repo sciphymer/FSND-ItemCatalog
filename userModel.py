@@ -10,7 +10,7 @@ class User(Base):
 	__tablename__ = 'users'
 
 	id = Column(Integer, primary_key=True)
-	username = Column(String(32), index=True)
+	username = Column(String(64), index=True)
 	password_hash = Column(String(64))
 
 	# User Info while login with OAuth

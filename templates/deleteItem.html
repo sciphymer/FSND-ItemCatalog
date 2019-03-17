@@ -1,8 +1,10 @@
 {% extends "main.html" %}
 {% block content %}
-	<h3>Delete Item</h3>
-	<p>Are you sure want to delete {{ item.title }} ?</p>
-	<form action="/catalog/{{ category }}/{{ item.title }}/delete" method="post">
-	  <button type="submit">Delete</button>
-	</form>
+	<div class="form-group">
+		<h3>Delete Item</h3>
+		<p>Are you sure want to delete {{ item.title }} ?</p>
+		<form action="/catalog/{{ category }}/{{ item.title }}/delete" method="post">
+		  <button class="btn btn-danger" type="submit">Delete</button>
+		</form>
+	</div>
 {% endblock %}

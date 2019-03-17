@@ -14,8 +14,8 @@
 	{%if 'username' in session %}
 		{% if item.user_id == session['user_id'] %}
 		<div>
-		    <a href="/catalog/{{ category }}/{{ item.title }}/edit">Edit </a>
-		    <a href="/catalog/{{ category }}/{{ item.title }}/delete" methods="POST"> Delete</a>
+		    <a class="btn btn-primary" href="/catalog/{{ category }}/{{ item.title }}/edit" role="button">Edit </a>
+		    <a class="btn btn-danger" href="/catalog/{{ category }}/{{ item.title }}/delete" methods="POST" role="button"> Delete</a>
 		</div>
 		{% endif %}
 	{% endif %}
