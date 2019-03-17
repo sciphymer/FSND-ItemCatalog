@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -34,6 +35,7 @@ class Item(Base):
 	category = relationship(Category)
 	user_id = Column(Integer, ForeignKey(User.id))
 	user = relationship(User)
+	created_date = Column(DateTime, default=datetime.datetime.utcnow)
 
 
 	@property

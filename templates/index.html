@@ -6,11 +6,12 @@
 {% endblock %}
 {% block content %}
 <div class='col'>
-	<h1>Latest Items</h1>
-	{%if 'username' in session %}
-		{% for item in items %}
-		<div>{{item.title}}</div>
-		{% endfor %}
+	{% if 'username' in session %}
+	<a href="/newItem">Create new Item</a>
 	{% endif %}
+	<h1>Latest Items</h1>
+	{% for item in items %}
+	<div>{{item.title}} <i>({{item.category.name}})</i></div>
+	{% endfor %}
 </div>
 {% endblock %}

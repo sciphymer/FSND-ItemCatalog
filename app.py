@@ -257,8 +257,7 @@ def gdisconnect():
 @app.route('/catalog')
 def showCategories():
 	user_items = []
-	if 'username' in login_session:
-		user_items = app_session.query(Item).filter_by(user_id=login_session['user_id']).all()
+	user_items = app_session.query(Item).order_by(Item.created_date.desc()).limit(10).all()
 	return render_template('index.html', categories=categories, items = user_items)
 
 @app.route('/newItem', methods=['GET', 'POST'])
@@ -331,8 +330,8 @@ def deleteItem(category, item):
 		return redirect(url_for('showItems', category=category))
 
 def createUser(login_session):
-    newUser = User(name=login_session['username'], email=login_session[
-                   'email'], picture=login_session['picture'])
+    newUser = User(username=login_session['email'], name=login_session['username'],
+    				email=login_session['email'], picture=login_session['picture'])
     user_session.add(newUser)
     user_session.commit()
     user = user_session.query(User).filter_by(email=login_session['email']).one()
