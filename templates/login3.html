@@ -22,12 +22,10 @@
 </head>
 
 <body>
-
-
-      <div id="loginPage" class="card bg-light text-dark">
-       <div class="card-header">
-
-       Please Log in to the Catelog App Account!</div>
+    <div id="loginPage" class="card bg-light text-dark">
+     <div class="card-header">
+     Please Log in to the Catelog App Account!
+    </div>
        <div class="card-body">
           {% with errors = get_flashed_messages(category_filter=["error"]) %}
           {% if errors %}
@@ -59,33 +57,6 @@
 
     <script>
       $('#oAuthGsigninBtn').click(function () {
-        function signInCallback(authResult) {
-          if (authResult['code']) {
-            $('#loginPage').attr('style', 'display:none');
-            $.ajax({
-              type: 'POST',
-              url: '/gconnect?state={{STATE}}',
-              processData: false,
-              data: authResult['code'],
-              contentType: 'application/octet-stream; charset=utf-8',
-              success: function (result) {
-                if (result) {
-                  $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...');
-                  setTimeout(function () {
-                    window.location.href = "/";
-                  }, 4000);
-                } else if (authResult['error']) {
-                  console.log('There was an error: ' + authResult['error']);
-                } else {
-                  $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-                }
-              }
-            });
-          }
-        }
-        auth2.grantOfflineAccess().then(signInCallback);
-      })
-      $('#signinButton').click(function () {
         function signInCallback(authResult) {
           if (authResult['code']) {
             $('#loginPage').attr('style', 'display:none');

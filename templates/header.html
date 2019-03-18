@@ -1,6 +1,11 @@
 <nav class="navbar navbar-light">
 
-	<h1><a id="header" href="/">Catalog App</a></h1>
+	<h2>
+	<a id="header" href="/">
+	<img id="home-btn" src="/static/home-button.jpg" alt="To Home page"/>
+	Catalog App
+	</a>
+	</h2>
 
 	{%if 'username' not in session %}
 	<a class="btn btn-primary" href="{{url_for('showLogin')}}">Login </a>

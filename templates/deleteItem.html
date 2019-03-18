@@ -1,6 +1,6 @@
 {% extends "main.html" %}
 {% block content %}
-	<div class="form-group">
+	<div id="form" class="form-group">
 		<h3>Delete Item</h3>
 		<p>Are you sure want to delete {{ item.title }} ?</p>
 		<form action="/catalog/{{ category }}/{{ item.title }}/delete" method="post">

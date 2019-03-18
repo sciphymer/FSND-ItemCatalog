@@ -1,14 +1,14 @@
 {% extends "main.html" %}
 
 {% block menu %}
-<nav class="col-md-4">
+<nav id="menu" class="col-md-4">
 	{% include "categories.html" %}
 </nav>
 {% endblock %}
 
 
 {% block content %}
-<div class="col">
+<div id="info" class="col">
 	<h3>{{ item.title }}</h3>
 	<p>{{ item.description }}</p>
 	{%if 'username' in session %}

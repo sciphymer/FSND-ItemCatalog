@@ -1,15 +1,52 @@
-nav{
-	background-color: white;
+.navbar>#username{
+	color: grey;
 }
 
-.navbar>#username{
-	display: inline-block;
+a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+}
+#category_menu>a {
+	color: white;
+}
+.card{
+	height: 250px;
+	color: black;
+	padding: 10px;
+}
+
+#info{
+	margin-top: 15px;
+}
+
+#menu{
+	border-right: 1px solid #E8E8E8;
+	margin-top: 15px;
+}
+
+#content{
+	background-color: #605A5A;
+	border: 15px solid #E3354F;
+	border-bottom-left-radius: 25px;
+	border-bottom-right-radius: 25px;
+	padding-bottom: 15px;
+	margin: 0 0;
+	color: white;
 }
 
 .error{
 	color: red;
 }
 
+#home-btn{
+	width: 30px;
+	height: 30px;
+	border-radius: 10px;
+}
+
+#header{
+	color: white;
+}
 .alert-message{
 	text-decoration: underline;
 }
@@ -18,31 +55,35 @@ nav{
     padding: 0 15px;
 }
 
-#newItemForm{
+#form{
 	margin: 20px auto;
 }
+
+
 
 #loginPage{
 	margin: 200px auto;
 	width: 350px;
+	height: auto;
 }
 
 .navbar-light {
 	margin: auto;
-	background-color: orange;
+	background-color: #3E3939;
 }
 .btn-primary,
 .btn-primary:active,
 .btn-primary:visited,
 .btn-primary:focus {
-	background-color: #A56DF8;
-	border-color: #A56DF8;
+	background-color: #E3354F;
+	border-color: #B21313;
 }
 
 .btn-primary:hover{
-	background-color: #C731F5;
+	background-color: #E35F5F;
 }
 
 .container{
 	width:  100%;
 }
+

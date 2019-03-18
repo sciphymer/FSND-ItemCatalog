@@ -1,15 +1,15 @@
 {% extends "main.html" %}
 {% block menu %}
-<div class="col-md-4">
+<div id="menu" class="col-md-4">
 	{% include "categories.html" %}
 </div>
 {% endblock %}
 {% block content %}
-<div class='col'>
+<div id="info" class='col'>
 	{% if 'username' in session %}
 	<a href="/newItem">Create new Item</a>
 	{% endif %}
-	<h1>Latest Items</h1>
+	<h3 class="heading">Latest Items</h3>
 	{% for item in items %}
 	<div>{{item.title}} <i>({{item.category.name}})</i></div>
 	{% endfor %}

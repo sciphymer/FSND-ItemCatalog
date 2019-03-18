@@ -1,8 +1,9 @@
 {% extends "main.html" %}
 {% block content %}
+
+<div id="form">
 <h3>Edit Item </h3>
 <form action="/catalog/{{category}}/{{ item.title }}/edit" method="post">
-
     <div class="form-group">
         <label for="title">Title:</label><br>
         <input type ="text" maxlength="20" name="title"
@@ -28,4 +29,5 @@
     </div>
     <button class="btn btn-primary" type="submit" value="submit">Update</button>
 </form>
+</div>
 {% endblock %}
