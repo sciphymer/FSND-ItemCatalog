@@ -35,17 +35,20 @@ Then run the application by ```python app.py``` the web application will be host
 #API endpoints
 
 - localhost:5050/api/v1/users, Method="POST"
+
 Description: To create new user account.
 Request body parameters:
 {"username":"enter_your_username","password":"enter_your_password"}
 Return: If user account is successfully created, a json format of username will be return
 
 - /api/v1/catalog, Method="GET"
+
 Description: To get all the category names
 Request body parameters: Basic Auth is required using the user account credentials
 Return: A list of Category names in json format
 
 - /api/v1/catalog/<string:category>/items, Method="GET"
+
 Description: To get all the items under a specific category name.
 Request body parameters: Basic Auth is required using the user account credentials
 Return: A list of item details in json format
