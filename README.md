@@ -1,6 +1,7 @@
 # FSND-Project2-ItemCatalog
 
 #Introduction
+
 This project is to develop an web application that show a lists of items within a variety of categories. There is a user registration and authentication system implemented by both the Google OAuth and local Database. Registered users will be able to post, edit and delete their own items on the application. Users only have right to do changes on their own posts. The application includes API endpoint for authenicated users to get protected resources.
 The whole web application from Frontend to Backend is built from scratches.
 
@@ -18,11 +19,13 @@ For the local database authentication, the user account is created by saving the
 
 
 #How to run
+
 Prepare an ubuntu or linux environment which support Python v2.7.
 Download the project folder, and run ```python prepareDB.py``` to load the default item categories to the database, sportCategories.db will be created.
 Then run the application by ```python app.py``` the web application will be host on the localhost:5050 correspondingly. In the initial run of the application, the database is empty, you will need to create the users account and add the catelog's items one by one.
 
 #How to use the application
+
 - On the top right hand corner, press the "login in" button, you can choose either using Google account to sign or create a local account.
 - After successfully signed in, you can click "Add Item" on the home page and add Item's Title, description, and choosing its Category belonged to.
 - To view the created item, navigate from the left hand side menu by clicking the corresponding category.
