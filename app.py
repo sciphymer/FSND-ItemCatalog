@@ -56,18 +56,6 @@ def new_user():
 	user_session.commit()
 	return jsonify({ 'username': user.username }), 201, {'Location': url_for('get_user', id = user.id, _external = True)}
 
-@app.route('/api/v1/users/<int:id>')
-def get_user(id):
-	user = user_session.query(User).filter_by(id=id).one()
-	if not user:
-		abort(400)
-	return jsonify({'username': user.username})
-
-@app.route('/api/v1/resource')
-@auth.login_required
-def get_resource():
-	return jsonify({ 'data': 'Hello, %s!' % g.user.username })
-
 @app.route('/api/v1/catalog',methods=['GET'])
 @auth.login_required
 def get_catelog():
