@@ -5,12 +5,14 @@ This project is to develop an web application that show a lists of items within 
 The whole web application from Frontend to Backend is built from scratches.
 
 #Technology used
+
 ##Backend
 - This application is written in Python, using Flask framework to implement the web server and do CRUD routing and Jinja2 in Flask for rending HTML templates.
 - The database is in sqlite3. Using SQLAlchemy ORM library to communicate with the sqlite3 database and doing read write of data.
 - User registration and authenication part can choose from choosing OAuth 2.0 protocol and local database.
 To use OAuth 2.0 with Google account login, the application is first registered on the "Google Developer Console", a "client_secrets.json" is downloaded from the "Developer Console". A "client id" in the client_secrets.json is needed to attached to the web application, so that during the Google account OAuth login, Google knows the user is authenticating the application.
 For the local database authentication, the user account is created by saving the username and hashed password in the database. Everytime, only hashed password is compared to increase the security.
+
 ##Frontend
 - Bootstrap 4.0 has been used to assist the layout styling.
 
