@@ -2,6 +2,22 @@ nav{
 	background-color: white;
 }
 
+.navbar>#username{
+	display: inline-block;
+}
+
+.error{
+	color: red;
+}
+
+.alert-message{
+	text-decoration: underline;
+}
+
+.alert-message>ul{
+    padding: 0 15px;
+}
+
 #newItemForm{
 	margin: 20px auto;
 }

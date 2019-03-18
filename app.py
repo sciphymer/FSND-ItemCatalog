@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, g, abort, jsonify
 from flask import session as login_session
 from flask import make_response
+from flask_httpauth import HTTPBasicAuth
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from dbModels import Base, Category, Item, User
@@ -9,6 +10,8 @@ from oauth2client.client import FlowExchangeError
 import httplib2
 import random, string, requests
 import json
+
+auth = HTTPBasicAuth()
 
 user_engine = create_engine('sqlite:///users.db', connect_args={'check_same_thread': False})
 app_engine = create_engine('sqlite:///sportCategories.db', connect_args={'check_same_thread': False})
@@ -26,6 +29,116 @@ categories = app_session.query(Category).all()
 CLIENT_ID = json.loads(
 	open('client_secrets.json', 'r').read())['web']['client_id']
 
+@auth.verify_password
+def verify_password(username_or_token, password):
+	#Try to see if it's a token first
+	user_id = User.verify_auth_token(username_or_token)
+	if user_id:
+		user = user_session.query(User).filter_by(id = user_id).one()
+	else:
+		user = user_session.query(User).filter_by(username = username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+	g.user = user
+	return True
+
+@app.route('/api/v1/token')
+@auth.login_required
+def get_auth_token():
+	token = g.user.generate_auth_token()
+	return jsonify({'token': token.decode('ascii')})
+
+@app.route('/api/v1/users', methods = ['POST'])
+def new_user():
+	username = request.json.get('username')
+	password = request.json.get('password')
+	if username is None or password is None:
+		print "missing arguments"
+		abort(400)
+
+	if user_session.query(User).filter_by(username = username).first() is not None:
+		print "existing user"
+		user = user_session.query(User).filter_by(username=username).first()
+		return jsonify({'message':'user already exists'}), 200, {'Location': url_for('get_user', id = user.id, _external = True)}
+
+	user = User(username = username)
+	user.hash_password(password)
+	user_session.add(user)
+	user_session.commit()
+	return jsonify({ 'username': user.username }), 201, {'Location': url_for('get_user', id = user.id, _external = True)}
+
+@app.route('/login/webAuth',methods =['POST'])
+def checkAuth():
+	username = request.form['username']
+	password = request.form['password']
+	if username is None or password is None:
+		response = make_response(
+			json.dumps("Either username or password is empty"), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	user = user_session.query(User).filter_by(username = username).first()
+	output = '<p> You have login successfully! </p>'
+	if user is None:
+		user = User(username = username)
+		user.hash_password(password)
+		user_session.add(user)
+		user_session.commit()
+		user = user_session.query(User).filter_by(username = username).first()
+		login_session['username'] = username
+		login_session['user_id'] = user.id
+		login_session['provider'] = "local"
+		output += '<p> The login credentials entered cannot be found in database, </p>'
+		output += '<p> a new account has been created for you! </p>'
+		output += '<h1>Welcome, '
+		output += login_session['username']
+		output += '!</h1>'
+		flash("Now logged in as %s" % login_session['username'],'info')
+	else:
+		if user.verify_password(password):
+			user = user_session.query(User).filter_by(username = username).first()
+			login_session['username'] = username
+			login_session['user_id'] = user.id
+			login_session['provider'] = "local"
+			output += '<h1>Welcome, '
+			output += login_session['username']
+			output += '!</h1>'
+		else:
+			flash("Your password is incorrect, Please try again!",'error')
+			return render_template("login3.html")
+	return render_template("loginSuccess.html", result=output)
+
+def createUser(login_session):
+	newUser = User(username=login_session['email'], name=login_session['username'],
+					email=login_session['email'], picture=login_session['picture'])
+	user_session.add(newUser)
+	user_session.commit()
+	user = user_session.query(User).filter_by(email=login_session['email']).one()
+	return user.id
+
+
+@app.route('/api/v1/users/<int:id>')
+def get_user(id):
+	user = user_session.query(User).filter_by(id=id).one()
+	if not user:
+		abort(400)
+	return jsonify({'username': user.username})
+
+@app.route('/api/v1/resource')
+@auth.login_required
+def get_resource():
+	return jsonify({ 'data': 'Hello, %s!' % g.user.username })
+
+@app.route('/api/v1/catelog',methods=['GET'])
+@auth.login_required
+def get_catelog():
+	return jsonify({'category': [category.serialize for category in categories]})
+
+@app.route('/api/v1/catelog/<string:category>/items',methods=['GET'])
+@auth.login_required
+def get_items():
+	items = app_session.query(Item).filter(Item.category.has(name=category)).all()
+	return jsonify({'category': category.name, 'item':[item.serialize for item in items]})
+
 @app.route('/login')
 def showLogin():
 	state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
@@ -34,24 +147,30 @@ def showLogin():
 
 @app.route('/logout')
 def logout():
-    if 'provider' in login_session:
-        if login_session['provider'] == 'google':
-            gdisconnect()
-            del login_session['gplus_id']
-            del login_session['access_token']
-        if login_session['provider'] == 'facebook':
-            fbdisconnect()
-            del login_session['facebook_id']
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
-        del login_session['user_id']
-        del login_session['provider']
-        flash("You have successfully been logged out.")
-        return redirect(url_for('showCategories'))
-    else:
-        flash("You were not logged in")
-        return redirect(url_for('showCategories'))
+	if 'provider' in login_session:
+		if login_session['provider'] == 'local':
+			del login_session['username']
+			del login_session['user_id']
+			del login_session['provider']
+			flash("You have successfully been logged out.",'info')
+			return redirect(url_for('showCategories'))
+		if login_session['provider'] == 'google':
+			gdisconnect()
+			del login_session['gplus_id']
+			del login_session['access_token']
+		if login_session['provider'] == 'facebook':
+			fbdisconnect()
+			del login_session['facebook_id']
+		del login_session['username']
+		del login_session['email']
+		del login_session['picture']
+		del login_session['user_id']
+		del login_session['provider']
+		flash("You have successfully been logged out.",'info')
+		return redirect(url_for('showCategories'))
+	else:
+		flash("You were not logged in",'info')
+		return redirect(url_for('showCategories'))
 
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
@@ -61,8 +180,6 @@ def fbconnect():
 		return response
 	access_token = request.data
 	print "access token received %s " % access_token
-
-
 	app_id = json.loads(open('fb_client_secrets.json', 'r').read())[
 		'web']['app_id']
 	app_secret = json.loads(
@@ -138,14 +255,12 @@ def fbdisconnect():
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
 	# Validate state token
-	print "Validate state token"
 	if request.args.get('state') != login_session['state']:
 		response = make_response(json.dumps('Invalid state parameter.'), 401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
 	# Obtain authorization code
 	code = request.data
-	print "Obtain authorization code"
 	try:
 		# Upgrade the authorization code into a credentials object
 		print "Upgrade the authorization code into a credentials object"
@@ -161,9 +276,7 @@ def gconnect():
 		return response
 
 	# Check that the access token is valid.
-	print "Check that the access token is valid."
 	access_token = credentials.access_token
-	print "access_token=%s"%access_token
 	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
 		   % access_token)
 	h = httplib2.Http()
@@ -186,7 +299,6 @@ def gconnect():
 	if result['issued_to'] != CLIENT_ID:
 		response = make_response(
 			json.dumps("Token's client ID does not match app's."), 401)
-		print "Token's client ID does not match app's."
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
@@ -228,30 +340,29 @@ def gconnect():
 	output += '<img src="'
 	output += login_session['picture']
 	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-	flash("you are now logged in as %s" % login_session['username'])
-	print "done!"
+	flash("you are now logged in as %s" % login_session['username'],'info')
 	return output
 
 @app.route('/gdisconnect')
 def gdisconnect():
-    # Only disconnect a connected user.
-    access_token = login_session.get('access_token')
-    if access_token is None:
-        response = make_response(
-            json.dumps('Current user not connected.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
-    h = httplib2.Http()
-    result = h.request(url, 'GET')[0]
-    if result['status'] == '200':
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
-        response.headers['Content-Type'] = 'application/json'
-        return response
+	# Only disconnect a connected user.
+	access_token = login_session.get('access_token')
+	if access_token is None:
+		response = make_response(
+			json.dumps('Current user not connected.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+	h = httplib2.Http()
+	result = h.request(url, 'GET')[0]
+	if result['status'] == '200':
+		response = make_response(json.dumps('Successfully disconnected.'), 200)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	else:
+		response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+		response.headers['Content-Type'] = 'application/json'
+		return response
 
 @app.route('/')
 @app.route('/catalog')
@@ -275,9 +386,8 @@ def newItem():
 				user_id=login_session['user_id'])
 			app_session.add(item)
 			app_session.commit()
-			flash('New Item %s is successfully Created.' % item.title)
+			flash('New Item %s is successfully Created.' % item.title,'info')
 			return redirect(url_for('showCategories'))
-
 
 @app.route('/catalog/<string:category>/items')
 def showItems(category):
@@ -306,10 +416,10 @@ def editItem(category, item):
 			edit_item.cat_id = request.form['cat_id']
 			app_session.add(edit_item)
 			app_session.commit()
-			#flash('Category ID: %s, %s Successfully updated' % (edit_item.cat_id, edit_item.title))
+			flash('Category ID: %s, %s Successfully updated' % (edit_item.cat_id, edit_item.title),'info')
 			return redirect(url_for('showCategories'))
 		else:
-			flash('The form is incomplete!')
+			flash('The form is incomplete!','error')
 			return render_template('editItem.html', item=edit_item)
 
 
@@ -330,25 +440,25 @@ def deleteItem(category, item):
 		return redirect(url_for('showItems', category=category))
 
 def createUser(login_session):
-    newUser = User(username=login_session['email'], name=login_session['username'],
-    				email=login_session['email'], picture=login_session['picture'])
-    user_session.add(newUser)
-    user_session.commit()
-    user = user_session.query(User).filter_by(email=login_session['email']).one()
-    return user.id
+	newUser = User(username=login_session['email'], name=login_session['username'],
+					email=login_session['email'], picture=login_session['picture'])
+	user_session.add(newUser)
+	user_session.commit()
+	user = user_session.query(User).filter_by(email=login_session['email']).one()
+	return user.id
 
 
 def getUserInfo(user_id):
-    user = user_session.query(User).filter_by(id=user_id).one()
-    return user
+	user = user_session.query(User).filter_by(id=user_id).one()
+	return user
 
 
 def getUserID(email):
-    try:
-        user = user_session.query(User).filter_by(email=email).one()
-        return user.id
-    except:
-        return None
+	try:
+		user = user_session.query(User).filter_by(email=email).one()
+		return user.id
+	except:
+		return None
 
 
 if __name__ == '__main__':
