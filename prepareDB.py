@@ -2,7 +2,9 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from dbModels import Base, Category, Item, User
 
-app_engine = create_engine('sqlite:///sportCategories.db', connect_args={'check_same_thread': False})
+sqlite_connStr = 'sqlite:////sportCategories.db'
+postgreSQL_connStr = 'postgresql://dbadmin:dbadmin@localhost:5432/flaskappDB'
+app_engine = create_engine(postgreSQL_connStr)
 
 Base.metadata.bind = app_engine
 

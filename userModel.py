@@ -14,7 +14,7 @@ class User(Base):
 
 	id = Column(Integer, primary_key=True)
 	username = Column(String(64), index=True)
-	password_hash = Column(String(64))
+	password_hash = Column(String(250))
 
 	# User Info while login with OAuth
 	name = Column(String(250), nullable=True)
@@ -36,6 +36,7 @@ class User(Base):
 			self.picture
 		}
 
-
-engine = create_engine('sqlite:///users.db')
+sqlite_connStr = 'sqlite:////var/www/FlaskApp/FlaskApp/users.db'
+postgreSQL_connStr = 'postgresql://dbadmin:dbadmin@localhost/flaskappDB'
+engine = create_engine(postgreSQL_connStr)
 Base.metadata.create_all(engine)

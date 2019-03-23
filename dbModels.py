@@ -48,6 +48,7 @@ class Item(Base):
 			'cat_id': self.cat_id
 		}
 
-
-engine = create_engine('sqlite:///sportCategories.db')
+sqlite_connStr = 'sqlite:////var/www/FlaskApp/FlaskApp/sportCategories.db'
+postgreSQL_connStr = 'postgresql://dbadmin:dbadmin@localhost/flaskappDB'
+engine = create_engine(postgreSQL_connStr)
 Base.metadata.create_all(engine)
